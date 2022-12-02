@@ -6,6 +6,12 @@ var clearButton = document.getElementById("clr");
 // Input for the numbers
 numButton.forEach(number => {
     number.addEventListener('click', (e) => {
+        if (displayNum.innerText === "Add Input Here" ||
+        displayNum.innerText === "Cleared")
+        {
+            displayNum.innerText= "";
+        }
+
         // The length of the input number can't pass 6 digits.
         if (displayNum.innerText.length < 6)
         {
@@ -16,7 +22,7 @@ numButton.forEach(number => {
 
 // Clear Button
 clearButton.addEventListener("click", function() {
-    displayNum.innerText= "";
+    displayNum.innerText= "Cleared";
 })
 
 
