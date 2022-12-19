@@ -1,6 +1,7 @@
 var numButton = document.querySelectorAll(".num")
 var oprButton = document.querySelectorAll(".opr");
 
+var topDisplay = document.getElementsByTagName("h3")[0];
 var displayNum = document.getElementsByTagName("h1")[0];
 var clearButton = document.getElementById("clr");
 var equalButton = document.getElementById("compute");
@@ -15,10 +16,9 @@ var currentState = oprState[0];
 numButton.forEach(number => {
     number.addEventListener('click', (e) => {
 
-        //displayNum.innerText= "";
 
         // The length of the input number can't pass 6 digits.
-        if (displayNum.innerText.length < 6)
+        if (displayNum.innerText.length < 9)
         {
             displayNum.innerText += e.target.innerText;
         }
@@ -30,6 +30,8 @@ oprButton.forEach(operator => {
     operator.addEventListener('click', (e) =>
     {
         prevOperand = parseInt(displayNum.innerText);
+
+        if (!prevOperand) { return; }
 
         displayNum.innerText = "";
 
@@ -50,6 +52,9 @@ oprButton.forEach(operator => {
             default:
                 break;
         }
+
+        topDisplay.innerText = prevOperand.toString() + " " + e.target.innerText;
+
     })
 })
 
@@ -57,6 +62,8 @@ oprButton.forEach(operator => {
 equalButton.addEventListener("click", () => {
     currOperand = parseInt(displayNum.innerText);
     let answer; 
+
+    if (!prevOperand || !currOperand) { return; }
 
     switch(currentState) 
     {
@@ -76,7 +83,11 @@ equalButton.addEventListener("click", () => {
             answer = prevOperand / currOperand;
             displayNum.innerText = answer;
             break;
+        default:
+            break;
     }
+
+    topDisplay.innerText += " " + currOperand.toString() + " = ";
 
     currentState = oprState[0];
 })
@@ -85,6 +96,7 @@ equalButton.addEventListener("click", () => {
 // Clear Button
 clearButton.addEventListener("click", () => {
     displayNum.innerText= "";
+    topDisplay.innerText = "";
     currentState = oprState[0];
 })
 
