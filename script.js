@@ -11,16 +11,40 @@ var prevOperand;
 const oprState = ['NONE', 'ADD', 'SUB', 'MUL', 'DIV'];
 var currentState = oprState[0];
 
+const MAX_NUM_VAL = 999999999999;
+
+var hasDecimal = false;
+var hasAnswer = false;
+
 
 // Input for the numbers
 numButton.forEach(number => {
     number.addEventListener('click', (e) => {
 
+        // Clear the displayed answer number, when you type in another number.
+        if (hasAnswer) 
+        {
+            displayNum.innerText = "";
+            hasAnswer = false;
+            hasDecimal = false;
+        }
 
         // The length of the input number can't pass 6 digits.
         if (displayNum.innerText.length < 9)
         {
-            displayNum.innerText += e.target.innerText;
+            if (e.target.innerText === '.')
+            {
+                // Makes sure there is no more than 1 decimal.
+                if (!hasDecimal) 
+                { 
+                    displayNum.innerText += e.target.innerText;
+                    hasDecimal = true;
+                }
+            }
+            else
+            {
+                displayNum.innerText += e.target.innerText;
+            }
         }
     })
 })
@@ -29,10 +53,11 @@ numButton.forEach(number => {
 oprButton.forEach(operator => {
     operator.addEventListener('click', (e) =>
     {
-        prevOperand = parseInt(displayNum.innerText);
+        prevOperand = parseFloat(displayNum.innerText);
 
         if (!prevOperand) { return; }
 
+        hasDecimal = false;
         displayNum.innerText = "";
 
         switch (e.target.innerText) 
@@ -60,32 +85,39 @@ oprButton.forEach(operator => {
 
 // Equals button that will compute the math operation.
 equalButton.addEventListener("click", () => {
-    currOperand = parseInt(displayNum.innerText);
+    currOperand = parseFloat(displayNum.innerText);
     let answer; 
 
     if (!prevOperand || !currOperand) { return; }
+
+    hasAnswer = true;
 
     switch(currentState) 
     {
         case oprState[1]: // addition
             answer = prevOperand + currOperand;
-            displayNum.innerText = answer;
             break;
         case oprState[2]: // subtraction
             answer = prevOperand - currOperand;
-            displayNum.innerText = answer;
             break;
         case oprState[3]: // multiplication
             answer = prevOperand * currOperand;
-            displayNum.innerText = answer;
             break;
         case oprState[4]: // division
             answer = prevOperand / currOperand;
-            displayNum.innerText = answer;
             break;
         default:
+            return;
             break;
     }
+
+    // Answer will be rounded to 2 decimal places.
+    if (answer.toString().includes(".")) { answer = answer.toFixed(2); }
+
+    // When answer is too big.
+    if (answer > MAX_NUM_VAL) { answer = 'Infinity'; }
+
+    displayNum.innerText = answer;
 
     topDisplay.innerText += " " + currOperand.toString() + " = ";
 
@@ -95,6 +127,8 @@ equalButton.addEventListener("click", () => {
 
 // Clear Button
 clearButton.addEventListener("click", () => {
+    hasAnswer = false;
+    hasDecimal = false;
     displayNum.innerText= "";
     topDisplay.innerText = "";
     currentState = oprState[0];
